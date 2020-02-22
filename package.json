@@ -4,6 +4,7 @@
   "description": "",
   "main": "webpack.common.js",
   "scripts": {
+    "start": "node ./dist/server.js",
     "dev": "webpack-dev-server --config webpack.dev.js --open",
     "build": "webpack --config webpack.prod.js"
   },
@@ -29,6 +30,7 @@
     "webpack-merge": "^4.2.2"
   },
   "dependencies": {
+    "express": "^4.17.1",
     "face-api.js": "^0.22.1"
   }
 }
