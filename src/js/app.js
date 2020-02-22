@@ -80,7 +80,7 @@ function videoPlayingHandler() {
   }, 100);
 }
 
-(async function mian() {
+(async function() {
   try {
     await Promise.all([
       nets.tinyFaceDetector.loadFromUri("../models"),
