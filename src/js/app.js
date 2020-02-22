@@ -5,6 +5,11 @@ import "../css/styles.css";
 const video = document.getElementById("video");
 const loading = document.getElementById("loading");
 
+video.addEventListener("playing", () => {
+  const canvas = createCanvasFromMedia(video);
+  document.body.append(canvas);
+});
+
 async function startVideo() {
   try {
     const stream = await navigator.mediaDevices.getUserMedia({ video: true });
