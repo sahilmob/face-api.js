@@ -39,12 +39,16 @@ function videoPlayingHandler() {
       const detections = await detectAllFaces(
         video,
         new TinyFaceDetectorOptions()
-      );
+      )
+        .withFaceLandmarks()
+        .withFaceExpressions();
       const resizedDetections = resizeResults(detections, displaySize);
 
       canvas.getContext("2d").clearRect(0, 0, canvas.width, canvas.height);
 
       draw.drawDetections(canvas, resizedDetections);
+      draw.drawFaceLandmarks(canvas, resizedDetections);
+      draw.drawFaceExpressions(canvas, resizedDetections);
     } catch (error) {
       console.log(error);
     }
