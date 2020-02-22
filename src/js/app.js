@@ -5,13 +5,15 @@ import {
   detectAllFaces,
   TinyFaceDetectorOptions,
   resizeResults,
-  draw
+  draw,
+  utils
 } from "face-api.js";
 
 import "../css/styles.css";
 
 const video = document.getElementById("video");
 const loading = document.getElementById("loading");
+let predictedAges = [];
 
 video.addEventListener("playing", videoPlayingHandler);
 
@@ -24,6 +26,14 @@ async function startVideo() {
   } catch (error) {
     console.log(error);
   }
+}
+
+function interpolateAgePredictions(age) {
+  predictedAges = [age].concat(predictedAges).slice(0, 30);
+  const avgPredictedAge = predictedAges.reduce(
+    (avg, age) => (avg + age) / predictedAges.length
+  );
+  return avgPredictedAge;
 }
 
 function videoPlayingHandler() {
@@ -41,7 +51,8 @@ function videoPlayingHandler() {
         new TinyFaceDetectorOptions()
       )
         .withFaceLandmarks()
-        .withFaceExpressions();
+        .withFaceExpressions()
+        .withAgeAndGender();
       const resizedDetections = resizeResults(detections, displaySize);
 
       canvas.getContext("2d").clearRect(0, 0, canvas.width, canvas.height);
@@ -49,6 +60,20 @@ function videoPlayingHandler() {
       draw.drawDetections(canvas, resizedDetections);
       draw.drawFaceLandmarks(canvas, resizedDetections);
       draw.drawFaceExpressions(canvas, resizedDetections);
+
+      if (resizedDetections[0]) {
+        const age = resizedDetections[0].age;
+        const interpolatedAge = interpolateAgePredictions(age);
+        const bottomRight = {
+          x: resizedDetections[0].detection.box.bottomRight.x,
+          y: resizedDetections[0].detection.box.bottomRight.y
+        };
+
+        new draw.DrawTextField(
+          [`${utils.round(interpolatedAge, 0)} years`],
+          bottomRight
+        ).draw(canvas);
+      }
     } catch (error) {
       console.log(error);
     }
