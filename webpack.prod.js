@@ -10,7 +10,7 @@ const common = require("./webpack.common");
 
 module.exports = merge(common, {
   mode: "production",
-  entry: "./src/js/app.js",
+  entry: ["@babel/polyfill", "./src/js/app.js"],
   output: {
     filename: "[name].[contentHash].bundle.js",
     path: path.resolve(__dirname, "dist")
