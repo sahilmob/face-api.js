@@ -1,14 +1,19 @@
-import { nets, createCanvasFromMedia } from "face-api.js";
+import {
+  nets,
+  createCanvasFromMedia,
+  matchDimensions,
+  detectAllFaces,
+  TinyFaceDetectorOptions,
+  resizeResults,
+  draw
+} from "face-api.js";
 
 import "../css/styles.css";
 
 const video = document.getElementById("video");
 const loading = document.getElementById("loading");
 
-video.addEventListener("playing", () => {
-  const canvas = createCanvasFromMedia(video);
-  document.body.append(canvas);
-});
+video.addEventListener("playing", videoPlayingHandler);
 
 async function startVideo() {
   try {
@@ -19,6 +24,31 @@ async function startVideo() {
   } catch (error) {
     console.log(error);
   }
+}
+
+function videoPlayingHandler() {
+  const displaySize = { width: video.width, height: video.height };
+  const canvas = createCanvasFromMedia(video);
+
+  document.body.append(canvas);
+
+  matchDimensions(canvas, displaySize);
+
+  setInterval(async function() {
+    try {
+      const detections = await detectAllFaces(
+        video,
+        new TinyFaceDetectorOptions()
+      );
+      const resizedDetections = resizeResults(detections, displaySize);
+
+      canvas.getContext("2d").clearRect(0, 0, canvas.width, canvas.height);
+
+      draw.drawDetections(canvas, resizedDetections);
+    } catch (error) {
+      console.log(error);
+    }
+  }, 100);
 }
 
 (async function mian() {
